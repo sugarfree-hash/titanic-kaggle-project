@@ -1,0 +1,28 @@
+----------------------------------------------------------------------
+
+Gitで管理対象外とするファイル（ignoreするファイル）
+
+----------------------------------------------------------------------
+
+1. データファイル (train/testの生データ)
+
+data/train.csv
+data/test.csv
+
+2. 予測結果ファイル (submission)
+
+data/submit/Ver.1.0/submission_baseline.csv
+data/submission_random_forest.csv
+data/submit/Ver.2.0/submission_deck_feature.csv
+data/submission_final_features.csv
+
+3. Python環境が生成する一時ファイル
+
+pycache/
+*.pyc
+.ipynb_checkpoints/
+
+4. OSが生成するファイル
+
+.DS_Store
+Thumbs.db
