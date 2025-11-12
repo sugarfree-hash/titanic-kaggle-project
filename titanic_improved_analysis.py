@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
+from xgboost import XGBClassifier
+# from sklearn.model_selection import GridSearchCV
 
 # ファイルパス（data/フォルダを使用）
 train_path = 'data/train.csv'
@@ -101,8 +103,30 @@ target = train_data['Survived']
 # -----
 
 # モデル設定と訓練
-model = RandomForestClassifier(n_estimators=100, max_depth=8, random_state=42)
-model.fit(X_train, target)
+# 1. ベースモデルの定義 (過去の経験やチューニング結果を元に最適なパラメータを設定)
+# モデル1: ランダムフォレスト (安定性と汎用性)
+rf_model = RandomForestClassifier(n_estimators=100, max_depth=8, random_state=42)
+
+# モデル2: XGBoost (高精度と非線形性の学習)
+xgb_model = XGBClassifier(
+    n_estimators=200, 
+    learning_rate=0.05, 
+    max_depth=5,
+    random_state=42, 
+    use_label_encoder=False, 
+    eval_metric='logloss'
+)
+
+# 2. 投票分類器の定義
+# 'hard' voting は、個々のモデルの予測結果の多数決を採用します。
+voting_clf = VotingClassifier(
+    estimators=[('rf', rf_model), ('xgb', xgb_model)], 
+    voting='hard'
+)
+
+# 3. 訓練の実行 (アンサンブル全体を訓練)
+voting_clf.fit(X_train, target)
+model = voting_clf
 
 # 予測の実行
 predictions = model.predict(X_test)
